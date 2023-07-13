@@ -1,8 +1,8 @@
 import AbstractSSE
-#from eventsource.listener import JSONEvent, EventSourceHandler
-#import tornado.web
-#import tornado.ioloop
-#import argparse
+from eventsource.listener import Event, EventSourceHandler
+import eventsource.request as request
+import tornado.web
+import tornado.ioloop
 import logging
 import sys
 
@@ -10,18 +10,18 @@ sys.path.append("..")
 import rtde.rtde as rtde
 import rtde.rtde_config as rtde_config
 import rtde.csv_writer as csv_writer
-import rtde.csv_binary_writer as csv_binary_writer
 
 
 class SSEendpoint(AbstractSSE.AbstractSSE):
     def __init__(self, port):
         self.port = port
+        self.handler = EventSourceHandler(event_class=Event, keepalive=2)
 
-   # def startServer(self):
-    #    application = tornado.web.Application(
-     #       [("r / (.*) / (.*)", EventSourceHandler, dict(event_class=JSONEvent, keepalive=2))])
-      #  application.listen(self.port)
-       # tornado.ioloop.IOLoop.instance().start()
+    def startServer(self):
+        application = tornado.web.Application(
+            [("r / (.*) / (.*)", EventSourceHandler, dict(event_class=Event, keepalive=2))])
+        application.listen(self.port)
+        tornado.ioloop.IOLoop.instance().start()
 
     def subscribe(self):
         pass
@@ -29,8 +29,9 @@ class SSEendpoint(AbstractSSE.AbstractSSE):
     def unsubscribe(self):
         pass
 
-    def notify(self):
-        pass
+    def notify(self, data):
+        datastr = " ".join(str(x) for x in data)
+        request.send_string('urlvonRESTpostInterface??', datastr)
 
     def robotConnect(self, host, port, frequency, config, buffered, output, binary):
         #connects with robot, sends recipe, receives data --> currently written into csv file
@@ -100,6 +101,14 @@ class SSEendpoint(AbstractSSE.AbstractSSE):
                     if state is not None:
                         writer.writerow(state)
                         i += 1
+                        #put data into array to put into events and ready to push to client
+                        data = []
+                        for i in range(len(output_names)):
+                            value = state.__dict__[output_names[i]]
+                            #data ist liste von arrays: data[1] enthält die joint pos., data[2] die tcp pos.
+                            #jedes array hat 6 Werte
+                            data.append(value)
+                        self.notify(data)
 
                 except KeyboardInterrupt:
                     keep_running = False

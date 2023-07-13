@@ -18,7 +18,7 @@ class Client(Observer.Observer):
         self.waypoints = self.waypoints.append(temp)
 
     def processData(self):
-        self.Client.poll()  # also invokes handle_stream() (hopefully)
+        self.Client.poll()  # opens connection, also invokes handle_stream() (hopefully)
         # after receiving every waypoint for one movement: execute algorithm
         self.algorithm.executeAlgorithm(self.waypoints)
         self.Client.end()

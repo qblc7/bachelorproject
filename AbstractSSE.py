@@ -11,6 +11,6 @@ class AbstractSSE(ABC):
         pass
 
     @abstractmethod
-    def notify(self):
+    def notify(self, data):
         pass
     
