@@ -1,9 +1,15 @@
 import zope.interface
 
 
-class Observer(zope.interface.Interface):
-    def __init__(self):
+class ObserverInterface(zope.interface.Interface):
+    c = zope.interface.Attribute("Eventsource Client")
+    algorithm = zope.interface.Attribute("Algorithm used to process data")
+    waypoints = zope.interface.Attribute("used to store data")
+    def __init__(url, action, target):
         pass
 
-    def processData(self):
+    def processData():
+        pass
+
+    def callback(event):
         pass

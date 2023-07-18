@@ -3,11 +3,11 @@ from abc import ABC, abstractmethod
 
 class AbstractSSE(ABC):
     @abstractmethod
-    def subscribe(self):
+    def subscribe(self, observer):
         pass
 
     @abstractmethod
-    def unsubscribe(self):
+    def unsubscribe(self, observer):
         pass
 
     @abstractmethod

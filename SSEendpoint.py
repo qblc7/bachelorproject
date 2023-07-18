@@ -15,23 +15,23 @@ import rtde.csv_writer as csv_writer
 class SSEendpoint(AbstractSSE.AbstractSSE):
     def __init__(self, port):
         self.port = port
-        self.handler = EventSourceHandler(event_class=Event, keepalive=2)
+        self.observers = []
 
     def startServer(self):
         application = tornado.web.Application(
-            [("r / (.*) / (.*)", EventSourceHandler, dict(event_class=Event, keepalive=2))])
-        application.listen(self.port)
+            [('127.0.0.1', EventSourceHandler, dict(event_class=Event, keepalive=2))])
+        application.listen(self.port) #appllication used to avoid to explicitly create HTTPServer
         tornado.ioloop.IOLoop.instance().start()
 
-    def subscribe(self):
-        pass
+    def subscribe(self, observer):
+        self.observers.append(observer)
 
-    def unsubscribe(self):
-        pass
+    def unsubscribe(self, observer):
+        self.observers.remove(observer)
 
     def notify(self, data):
         datastr = " ".join(str(x) for x in data)
-        request.send_string('urlvonRESTpostInterface??', datastr)
+        request.send_string(r"/", datastr) #'urlvonRESTpostInterface??'
 
     def robotConnect(self, host, port, frequency, config, buffered, output, binary):
         #connects with robot, sends recipe, receives data --> currently written into csv file
@@ -108,6 +108,7 @@ class SSEendpoint(AbstractSSE.AbstractSSE):
                             #data ist liste von arrays: data[1] enthält die joint pos., data[2] die tcp pos.
                             #jedes array hat 6 Werte
                             data.append(value)
+                            print("Server")
                         self.notify(data)
 
                 except KeyboardInterrupt:
