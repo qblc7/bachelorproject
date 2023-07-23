@@ -4,9 +4,6 @@
 #import tornado.web
 #import tornado.ioloop
 
-import json
-from datetime import datetime
-from uuid import uuid4
 
 from flask import Flask
 from flask_sse import sse
@@ -18,23 +15,27 @@ app.register_blueprint(sse, url_prefix='/stream')
 
 @app.route('/event/<action>')
 def event(action):
-    # user_id = uuid4()
-    # dateTimeObj = datetime.now()
-    # timestampStr = dateTimeObj.strftime("%d-%b-%Y (%H:%M:%S.%f)")
-    sse.publish(data=action, type="robotdata")
-    return {}, 200
+    if action == "finished":
+        sse.publish(data="finished", type="finished")
+        return {}, 200
+    else:
+        sse.publish(data=action, type="robotdata")
+        return {}, 200
+
+# how to run the app from terminal:
+# docker run --name redis-sse -p 6379:6379 -d redis (to stop container: docker stop <container id> oder <container name>)
+# nächstes mal: docker start <container name>
+# gunicorn SSEendpoint:app --worker-class gevent --bind 127.0.0.1:5000
+
+# how to run docker robot simulation:
+# docker run --rm -it universalrobots/ursim_e-series
+
 
 
 #class SSEendpoint(AbstractSSE.AbstractSSE):
 #   def __init__(self, port):
 #      self.port = port
 #     self.observers = []
-
-    #def startServer(self):
-     #   application = tornado.web.Application(
-      #      [(r"/poll/listen", EventSourceHandler, dict(event_class=Event, keepalive=2))]) # 127.0.0.1
-       # application.listen(self.port) #appllication used to avoid to explicitly create HTTPServer
-        #tornado.ioloop.IOLoop.instance().start()
 
     #def subscribe(self, observer):
      #   self.observers.append(observer)

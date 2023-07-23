@@ -1,12 +1,26 @@
-from eventsource.client import EventSourceClient, Event
 from Observer import ObserverInterface
 from Algorithm import Algorithm
 from Waypoint import Waypoint
 import zope.interface
 
-
 import sseclient
 import urllib3
+
+
+@zope.interface.implementer(ObserverInterface)
+class Clientside:
+    def __init__(self):
+        self.algorithm = Algorithm(10, 90)
+        self.waypoints = []
+
+    # callback function which is called for every received event
+    def callback(self, newEvent):
+        newData = map(float, newEvent.split())
+        temp = Waypoint(newData)
+        self.waypoints.append(temp)
+
+    def processData(self):
+        self.algorithm.executeAlgorithm(self.waypoints)
 
 
 def open_stream(url, headers):
@@ -16,36 +30,22 @@ def open_stream(url, headers):
 
 
 if __name__ == '__main__':
+    observer = Clientside()
+    streamNotFinished = True
     url = 'http://127.0.0.1:5000/stream'
     headers = {'Accept': 'text/event-stream'}
     response = open_stream(url, headers)
     client = sseclient.SSEClient(response)
     stream = client.events()
 
-    while True:
+    while streamNotFinished:  # while stream is open
         event = next(stream)
-        print(f"event: {event.event} \ndata: {event.data}")
+        if event.event == "finished":
+            streamNotFinished = False
+        else:
+            # print(f"event: {event.event} \ndata: {event.data}")
+            observer.callback(event.data)
+    observer.processData()
+    print("finished")
 
-# how to run the app from terminal
-# docker run --name redis-sse -p 6379:6379 -d redis (to stop container: docker stop <container id> oder <container name>)
-# nächstes mal: docker start <container name>
-# gunicorn SSEendpoint:app --worker-class gevent --bind 127.0.0.1:5000
 
-#@zope.interface.implementer(ObserverInterface)
-#class Clientside:
- #   def __init__(self, url, action, target):
- #       self.c = EventSourceClient(url=url, action=action, target=target, callback=self.callback, retry=3)
- #       self.algorithm = Algorithm(10, 90)
- #       self.waypoints = []
-
-    # callback function which is called for every received event
- #   def callback(self, event):
- #       print("client")
- #       temp = Waypoint(event.data)
- #       self.waypoints = self.waypoints.append(temp)
-
- #   def processData(self):
- #       self.c.poll()  # opens connection, also invokes handle_stream() (hopefully)
- #       # after receiving every waypoint for one movement: execute algorithm
- #       self.c.end()
- #       self.algorithm.executeAlgorithm(self.waypoints)

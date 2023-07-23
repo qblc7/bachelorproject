@@ -5,7 +5,7 @@ import xml.etree.ElementTree as ET
 
 class Algorithm:
     def __init__(self, minA, maxA):
-        # thresholds: for joints in angle, for TCP in m
+        # thresholds: for joints in angle, for TCP in meter
         self.minAngle = minA
         self.maxAngle = maxA
         self.minTCP = 2 * 0.85 * math.sin(minA / 2)
@@ -15,11 +15,12 @@ class Algorithm:
 
     # calculates all joint/tcp distances between two given waypoints
     def calculateDistances(self, wp, wpPrev):
-        for i in range(1, 8):
-            if i == 7:
-                temp = math.sqrt()  # $\sqrt{(x_{i}-x_{i-1})^2+(y_{i}-y_{i-1})^2+(z_{i}-z_{i-1})^2}$
+        for i in range(0, 7):
+            # if TCP
+            if i == 6:
+                temp = math.sqrt(pow((wp[i]-wpPrev[i]), 2) + pow((wp[i+1]-wpPrev[i+1]), 2) + pow((wp[i+2]-wpPrev[i+2]), 2))
                 self.compare(temp, self.minTCP, self.maxTCP, wp, True)
-            else:
+            else:  # joints
                 temp = wp.coordinates[i] - wpPrev.coordinates[i]
                 self.compare(temp, self.minAngle, self.maxAngle, wp, False)
 
@@ -64,17 +65,17 @@ class Algorithm:
             else:
                 pass
 
+    # parameter wp: list of programmed waypoints
     def executeAlgorithm(self, wp):
         self.wps = wp
         self.generateProposals(self.wps)
-        # self.generateBPMNs(self.wps)
         self.generateOriginalBPMN(self.wps)
         self.generateProposedBPMN(self.wps)
 
     def generateOriginalBPMN(self, wp):
         root = ET.Element('description xmlns="http://cpee.org/ns/description/1.0"/')
         for i in range(0, len(wp)):
-            ET.SubElement(root, "manipulate", id=str(i), label="post").text = "robotbefehl"  # -----?
+            ET.SubElement(root, "manipulate", id=str(i), label="post").text = str(wp[i])  # -----?
         origBpmn = ET.ElementTree(root)
         origBpmn.write("original.xml")
 
@@ -86,6 +87,6 @@ class Algorithm:
             elif wp[i].status == "missing":
                 print("max threshold too small")
             else:
-                ET.SubElement(root, "manipulate", id=str(i), label="post").text = "robotbefehl"  # -----?
+                ET.SubElement(root, "manipulate", id=str(i), label="post").text = str(wp[i])  # -----?
         propBpmn = ET.ElementTree(root)
         propBpmn.write("proposed.xml")

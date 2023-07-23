@@ -14,7 +14,7 @@ import sys
 sys.path.append("..")
 
 if __name__ == '__main__':
-    # connects with robot, sends recipe, receives data --> currently written into csv file
+    # connects with robot, sends recipe, receives data --> currently written into csv file and send to flask app
     # modified version of record.py; see copyright below:
     # !/usr/bin/env python
     # Copyright (c) 2020-2022, Universal Robots A/S,
@@ -40,7 +40,7 @@ if __name__ == '__main__':
     # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-    host = '172.17.0.3'
+    host = '172.17.0.2'
     port = 30004
     frequency = 50
     config = 'recipe.xml'
@@ -102,16 +102,7 @@ if __name__ == '__main__':
                     data2 = " ".join(str(x) for x in data[1])
                     tuples = (data1, data2)
                     datastr = " ".join(tuples)
-                    # print(type(datastr))
                     print(datastr)
-                    #databyte = datastr.encode('utf-8')
-                    # print(databyte)
-                    # body = urllib.parse.urlencode(datastr)
-                    # http_client.fetch("http://127.0.0.1:8000/poll/listen", method='POST', headers=None, body = databyte, callback = None)
-                    #r = requests.post("http://127.0.0.1:8000/poll/listen", databyte)
-                    #print(r.status_code)
-                    # request.send_string("http://127.0.0.1:8000/poll/listen", databyte)  # 'urlvonRESTpostInterface??'
-
                     answer = requests.get(f'http://127.0.0.1:5000/event/{datastr}')
                     print(answer.status_code)
 
@@ -122,6 +113,8 @@ if __name__ == '__main__':
                 sys.exit()
 
     sys.stdout.write("\rComplete!            \n")
+    answer = requests.get(f'http://127.0.0.1:5000/event/{"finished"}')
+    print(answer.status_code)
 
     con.send_pause()
     con.disconnect()
