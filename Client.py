@@ -15,7 +15,7 @@ class Clientside:
 
     # callback function which is called for every received event
     def callback(self, newEvent):
-        newData = map(float, newEvent.split())
+        newData = list(map(float, newEvent.split()))
         temp = Waypoint(newData)
         self.waypoints.append(temp)
 

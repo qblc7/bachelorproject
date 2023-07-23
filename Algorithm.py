@@ -1,4 +1,4 @@
-from Waypoint import *
+from Waypoint import Waypoint
 import math
 import xml.etree.ElementTree as ET
 
@@ -14,11 +14,12 @@ class Algorithm:
         self.wps = []
 
     # calculates all joint/tcp distances between two given waypoints
+    # parameters: wp: actual Waypoint, wpPrev: Waypoint of previous timestep
     def calculateDistances(self, wp, wpPrev):
         for i in range(0, 7):
             # if TCP
             if i == 6:
-                temp = math.sqrt(pow((wp[i]-wpPrev[i]), 2) + pow((wp[i+1]-wpPrev[i+1]), 2) + pow((wp[i+2]-wpPrev[i+2]), 2))
+                temp = math.sqrt(pow((wp.coordinates[i]-wpPrev.coordinates[i]), 2) + pow((wp.coordinates[i+1]-wpPrev.coordinates[i+1]), 2) + pow((wp.coordinates[i+2]-wpPrev.coordinates[i+2]), 2))
                 self.compare(temp, self.minTCP, self.maxTCP, wp, True)
             else:  # joints
                 temp = wp.coordinates[i] - wpPrev.coordinates[i]
@@ -43,27 +44,32 @@ class Algorithm:
         else:  # OK
             wp.distances.append(d)
 
+    # parameter waypoints: list of programmed waypoints
     def generateProposals(self, waypoints):
         # calculate distances for each waypoint except waypoint 0
         for t in range(1, len(waypoints)):
             self.calculateDistances(waypoints[t], waypoints[t - 1])
         # check status for each waypoint
-        for t in range(1, len(waypoints)):
+        #  for t in range(1, len(waypoints)):
+        t = 1
+        while t < len(waypoints):
             if waypoints[t].status == 'missing':  # case: need more wps
                 if waypoints[t].diffInTCP == True:
-                    print("add " + waypoints[t].statdiff / self.maxTCP + " more waypoints before t")
+                    print(f'add {waypoints[t].statdiff / self.maxTCP} more waypoints before t')
                 else:
-                    print("add " + waypoints[t].statdiff / self.maxAngle + " more waypoints before t")
+                    print(f'add {waypoints[t].statdiff / self.maxAngle} more waypoints before t')
+                t = t+1
             elif waypoints[t].status == "redundant":  # case: too many wps
                 s = t
                 # recalculate the distance and status if the wp is removed
                 # removes wps until status not "redundant" anymore
-                while waypoints[s].status == "redundant":
-                    print("remove waypoint" + s)
+                while waypoints[s].status == "redundant" and s < len(waypoints)-1:
+                    print(f'remove waypoint {s}')
                     self.calculateDistances(waypoints[s + 1], waypoints[s - 1])
                     s = s + 1
+                t = s+1
             else:
-                pass
+                t = t+1
 
     # parameter wp: list of programmed waypoints
     def executeAlgorithm(self, wp):
@@ -72,6 +78,7 @@ class Algorithm:
         self.generateOriginalBPMN(self.wps)
         self.generateProposedBPMN(self.wps)
 
+    # parameter wp: list of programmed waypoints
     def generateOriginalBPMN(self, wp):
         root = ET.Element('description xmlns="http://cpee.org/ns/description/1.0"/')
         for i in range(0, len(wp)):
@@ -79,6 +86,7 @@ class Algorithm:
         origBpmn = ET.ElementTree(root)
         origBpmn.write("original.xml")
 
+    # parameter wp: list of programmed waypoints
     def generateProposedBPMN(self, wp):
         root = ET.Element('description xmlns="http://cpee.org/ns/description/1.0"/')
         for i in range(0, len(wp)):
