@@ -80,21 +80,21 @@ class Algorithm:
 
     # parameter wp: list of programmed waypoints
     def generateOriginalBPMN(self, wp):
-        root = ET.Element('description xmlns="http://cpee.org/ns/description/1.0"/')
+        root = ET.Element("description", {'xmlns': 'http://cpee.org/ns/description/1.0'})
         for i in range(0, len(wp)):
-            ET.SubElement(root, "manipulate", id=str(i), label="post").text = str(wp[i])  # -----?
+            ET.SubElement(root, "call", id="a"+str(i), method="post").text = str(wp[i].coordinates)  # -----?
         origBpmn = ET.ElementTree(root)
         origBpmn.write("original.xml")
 
     # parameter wp: list of programmed waypoints
     def generateProposedBPMN(self, wp):
-        root = ET.Element('description xmlns="http://cpee.org/ns/description/1.0"/')
+        root = ET.Element("description", {'xmlns': 'http://cpee.org/ns/description/1.0'})
         for i in range(0, len(wp)):
             if wp[i].status == "redundant":
                 pass
             elif wp[i].status == "missing":
                 print("max threshold too small")
             else:
-                ET.SubElement(root, "manipulate", id=str(i), label="post").text = str(wp[i])  # -----?
+                ET.SubElement(root, "call", id="a"+str(i), method="post").text = str(wp[i].coordinates)  # -----?
         propBpmn = ET.ElementTree(root)
         propBpmn.write("proposed.xml")
