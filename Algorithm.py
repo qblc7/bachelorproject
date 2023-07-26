@@ -80,21 +80,81 @@ class Algorithm:
 
     # parameter wp: list of programmed waypoints
     def generateOriginalBPMN(self, wp):
-        root = ET.Element("description", {'xmlns': 'http://cpee.org/ns/description/1.0'})
+        root = ET.Element("description")
         for i in range(0, len(wp)):
-            ET.SubElement(root, "call", id="a"+str(i), method="post").text = str(wp[i].coordinates)  # -----?
+            call = ET.SubElement(root, "call", id="a"+str(i), endpoint="move")
+            parameters = ET.SubElement(call, "parameters")
+            ET.SubElement(parameters, "label").text = "Move to coords"
+            ET.SubElement(parameters, "method").text = ":post"
+            arguments = ET.SubElement(parameters, "arguments")
+            ET.SubElement(arguments, "v1").text = str(wp[i].coordinates[6])
+            ET.SubElement(arguments, "v2").text = str(wp[i].coordinates[7])
+            ET.SubElement(arguments, "v3").text = str(wp[i].coordinates[8])
+            ET.SubElement(arguments, "v4").text = str(wp[i].coordinates[9])
+            ET.SubElement(arguments, "v5").text = str(wp[i].coordinates[10])
+            ET.SubElement(arguments, "v6").text = str(wp[i].coordinates[11])
+            annotations = ET.SubElement(call, "annotations")
+            ET.SubElement(annotations, "_generic")
+            timing = ET.SubElement(annotations, "_timing")
+            ET.SubElement(timing, "_timing_weight")
+            ET.SubElement(timing, "_timing_avg")
+            ET.SubElement(timing, "explanations")
+            shifting = ET.SubElement(annotations, "_shifting")
+            ET.SubElement(shifting, "_shifting_type").text = "Duration"
+            context = ET.SubElement(annotations, "_context_data_analysis")
+            ET.SubElement(context, "probes")
+            ET.SubElement(context, "ips")
+            report = ET.SubElement(annotations, "report")
+            ET.SubElement(report, "url")
+            notes = ET.SubElement(annotations, "_notes")
+            ET.SubElement(notes, "_notes_general")
+            documentation = ET.SubElement(call, "documentation")
+            ET.SubElement(documentation, "input")
+            ET.SubElement(documentation, "output")
+            implementation = ET.SubElement(documentation, "implementation")
+            ET.SubElement(implementation, "description")
         origBpmn = ET.ElementTree(root)
         origBpmn.write("original.xml")
 
     # parameter wp: list of programmed waypoints
     def generateProposedBPMN(self, wp):
-        root = ET.Element("description", {'xmlns': 'http://cpee.org/ns/description/1.0'})
+        root = ET.Element("description")
         for i in range(0, len(wp)):
             if wp[i].status == "redundant":
                 pass
             elif wp[i].status == "missing":
                 print("max threshold too small")
             else:
-                ET.SubElement(root, "call", id="a"+str(i), method="post").text = str(wp[i].coordinates)  # -----?
+                call = ET.SubElement(root, "call", id="a" + str(i), endpoint="move")
+                parameters = ET.SubElement(call, "parameters")
+                ET.SubElement(parameters, "label").text = "Move to coords"
+                ET.SubElement(parameters, "method").text = ":post"
+                arguments = ET.SubElement(parameters, "arguments")
+                ET.SubElement(arguments, "v1").text = str(wp[i].coordinates[6])
+                ET.SubElement(arguments, "v2").text = str(wp[i].coordinates[7])
+                ET.SubElement(arguments, "v3").text = str(wp[i].coordinates[8])
+                ET.SubElement(arguments, "v4").text = str(wp[i].coordinates[9])
+                ET.SubElement(arguments, "v5").text = str(wp[i].coordinates[10])
+                ET.SubElement(arguments, "v6").text = str(wp[i].coordinates[11])
+                annotations = ET.SubElement(call, "annotations")
+                ET.SubElement(annotations, "_generic")
+                timing = ET.SubElement(annotations, "_timing")
+                ET.SubElement(timing, "_timing_weight")
+                ET.SubElement(timing, "_timing_avg")
+                ET.SubElement(timing, "explanations")
+                shifting = ET.SubElement(annotations, "_shifting")
+                ET.SubElement(shifting, "_shifting_type").text = "Duration"
+                context = ET.SubElement(annotations, "_context_data_analysis")
+                ET.SubElement(context, "probes")
+                ET.SubElement(context, "ips")
+                report = ET.SubElement(annotations, "report")
+                ET.SubElement(report, "url")
+                notes = ET.SubElement(annotations, "_notes")
+                ET.SubElement(notes, "_notes_general")
+                documentation = ET.SubElement(call, "documentation")
+                ET.SubElement(documentation, "input")
+                ET.SubElement(documentation, "output")
+                implementation = ET.SubElement(documentation, "implementation")
+                ET.SubElement(implementation, "description")
         propBpmn = ET.ElementTree(root)
         propBpmn.write("proposed.xml")
