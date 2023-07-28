@@ -114,7 +114,7 @@ class Algorithm:
             implementation = ET.SubElement(documentation, "implementation")
             ET.SubElement(implementation, "description")
         origBpmn = ET.ElementTree(root)
-        origBpmn.write("original.xml")
+        origBpmn.write("original" + str(self.maxAngle) + ".xml")
 
     # parameter wp: list of programmed waypoints
     def generateProposedBPMN(self, wp):
@@ -157,4 +157,4 @@ class Algorithm:
                 implementation = ET.SubElement(documentation, "implementation")
                 ET.SubElement(implementation, "description")
         propBpmn = ET.ElementTree(root)
-        propBpmn.write("proposed.xml")
+        propBpmn.write("proposed" + str(self.maxAngle) + ".xml")

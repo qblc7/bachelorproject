@@ -10,7 +10,10 @@ import urllib3
 @zope.interface.implementer(ObserverInterface)
 class Clientside:
     def __init__(self):
-        self.algorithm = Algorithm(10, 90)
+        self.algorithm90 = Algorithm(0, 90)
+        self.algorithm180 = Algorithm(90, 180)
+        self.algorithm270 = Algorithm(180, 270)
+        self.algorithm360 = Algorithm(270, 360)
         self.waypoints = []
 
     # callback function which is called for every received event
@@ -20,8 +23,10 @@ class Clientside:
         self.waypoints.append(temp)
 
     def processData(self):
-        self.algorithm.executeAlgorithm(self.waypoints)
-
+        self.algorithm90.executeAlgorithm(self.waypoints)
+        self.algorithm180.executeAlgorithm(self.waypoints)
+        self.algorithm270.executeAlgorithm(self.waypoints)
+        self.algorithm360.executeAlgorithm(self.waypoints)
 
 def open_stream(url, headers):
     """Get a streaming response for the given event feed using urllib3."""
