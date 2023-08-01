@@ -17,11 +17,14 @@ class Clientside:
         self.waypoints = []
 
     # callback function which is called for every received event
+    # adds the newly received event (Waypoint) to a list
     def callback(self, newEvent):
         newData = list(map(float, newEvent.split()))
         temp = Waypoint(newData)
         self.waypoints.append(temp)
 
+    # executes the algorithm to generate the BPMN model
+    # for testing thresholds the algorithm is executed several times
     def processData(self):
         self.algorithm90.executeAlgorithm(self.waypoints)
         self.algorithm180.executeAlgorithm(self.waypoints)
@@ -48,7 +51,6 @@ if __name__ == '__main__':
         if event.event == "finished":
             streamNotFinished = False
         else:
-            # print(f"event: {event.event} \ndata: {event.data}")
             observer.callback(event.data)
     observer.processData()
     print("finished")

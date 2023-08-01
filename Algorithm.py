@@ -22,7 +22,7 @@ class Algorithm:
                 temp = math.sqrt(pow((wp.coordinates[i]-wpPrev.coordinates[i]), 2) + pow((wp.coordinates[i+1]-wpPrev.coordinates[i+1]), 2) + pow((wp.coordinates[i+2]-wpPrev.coordinates[i+2]), 2))
                 self.compare(temp, self.minTCP, self.maxTCP, wp, True)
             else:  # joints
-                temp = wp.coordinates[i] - wpPrev.coordinates[i]
+                temp = abs(wp.coordinates[i] - wpPrev.coordinates[i])
                 self.compare(temp, self.minAngle, self.maxAngle, wp, False)
 
     # checks if the calculated distances are inbetween the min and max and classifies the waypoint
@@ -55,9 +55,9 @@ class Algorithm:
         while t < len(waypoints):
             if waypoints[t].status == 'missing':  # case: need more wps
                 if waypoints[t].diffInTCP == True:
-                    print(f'add {waypoints[t].statdiff / self.maxTCP} more waypoints before t')
+                    print(f'add {waypoints[t].statdiff / self.maxTCP} more waypoints before {t}')
                 else:
-                    print(f'add {waypoints[t].statdiff / self.maxAngle} more waypoints before t')
+                    print(f'add {waypoints[t].statdiff / self.maxAngle} more waypoints before {t}')
                 t = t+1
             elif waypoints[t].status == "redundant":  # case: too many wps
                 s = t
@@ -74,6 +74,8 @@ class Algorithm:
     # parameter wp: list of programmed waypoints
     def executeAlgorithm(self, wp):
         self.wps = wp
+        print('min='+str(self.minAngle)+' max='+str(self.maxAngle))
+        print('minTCP='+str(self.minTCP)+' maxTCP='+str(self.maxTCP))
         self.generateProposals(self.wps)
         self.generateOriginalBPMN(self.wps)
         self.generateProposedBPMN(self.wps)

@@ -15,7 +15,10 @@ sys.path.append("..")
 
 if __name__ == '__main__':
     # connects with robot, sends recipe, receives data --> currently written into csv file and send to flask app
-    # modified version of record.py; see copyright below:
+    # modified version of record.py (an example file on how to receive data from a Universal Robots robot via the RTDE
+    # interface);
+    # see copyright below:
+    #
     # !/usr/bin/env python
     # Copyright (c) 2020-2022, Universal Robots A/S,
     # All rights reserved.
@@ -96,13 +99,10 @@ if __name__ == '__main__':
                         # data ist liste von arrays: data[1] enthält die joint pos., data[2] die tcp pos.
                         # jedes array hat 6 Werte
                         data.append(value)
-                    # self.notify(data)
-                    # print(data)
                     data1 = " ".join(str(x) for x in data[0])
                     data2 = " ".join(str(x) for x in data[1])
                     tuples = (data1, data2)
                     datastr = " ".join(tuples)
-                    print(datastr)
                     answer = requests.get(f'http://127.0.0.1:5000/event/{datastr}')
                     print(answer.status_code)
 
