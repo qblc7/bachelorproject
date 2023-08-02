@@ -10,10 +10,10 @@ import urllib3
 @zope.interface.implementer(ObserverInterface)
 class Clientside:
     def __init__(self):
-        self.algorithm90 = Algorithm(0, 90)
-        self.algorithm180 = Algorithm(90, 180)
-        self.algorithm270 = Algorithm(180, 270)
-        self.algorithm360 = Algorithm(270, 360)
+        self.algorithm90 = Algorithm(1, 3)
+        self.algorithm180 = Algorithm(3, 6)
+        self.algorithm270 = Algorithm(6, 10)
+        self.algorithm360 = Algorithm(10, 20)
         self.waypoints = []
 
     # callback function which is called for every received event

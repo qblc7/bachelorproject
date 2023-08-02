@@ -5,27 +5,50 @@ import xml.etree.ElementTree as ET
 
 class Algorithm:
     def __init__(self, minA, maxA):
-        # thresholds: for joints in angle, for TCP in meter
+        # thresholds: for joints in radian (joint angles are received in rad), for TCP in meter
+        # Grad = rad*(180/pi)
         self.minAngle = minA
         self.maxAngle = maxA
-        self.minTCP = 2 * 0.85 * math.sin(minA / 2)
-        self.maxTCP = 2 * 0.85 * math.sin(maxA / 2)
+        self.minTCP = abs(2 * 0.85 * math.sin((minA*180/math.pi) / 2))
+        self.maxTCP = abs(2 * 0.85 * math.sin((maxA*180/math.pi) / 2))
         # list of programmed waypoints
         self.wps = []
 
     # calculates all joint/tcp distances between two given waypoints
     # parameters: wp: actual Waypoint, wpPrev: Waypoint of previous timestep
     def calculateDistances(self, wp, wpPrev):
+        ok = 0
+        missing = 0
+        redundant = 0
         for i in range(0, 7):
             # if TCP
             if i == 6:
+                print(type(wp.coordinates[i]))
                 temp = math.sqrt(pow((wp.coordinates[i]-wpPrev.coordinates[i]), 2) + pow((wp.coordinates[i+1]-wpPrev.coordinates[i+1]), 2) + pow((wp.coordinates[i+2]-wpPrev.coordinates[i+2]), 2))
                 self.compare(temp, self.minTCP, self.maxTCP, wp, True)
             else:  # joints
+                print(type(wp.coordinates[i]))
                 temp = abs(wp.coordinates[i] - wpPrev.coordinates[i])
                 self.compare(temp, self.minAngle, self.maxAngle, wp, False)
+            # not all joints will be moved at the same time: count how many distances classify as what
+            if wp.status == "ok":
+                ok = ok + 1
+            elif wp.status == "redundant":
+                redundant = redundant + 1
+                wp.status = "ok"
+            else:
+                missing = missing + 1
+                wp.status = "ok"
+        # classifying the waypoint -> as long as at least one max<distance>min: wp is ok
+        if ok > 0:
+            wp.status = "ok"
+        elif missing > redundant:
+            wp.status = "missing"
+        else:
+            wp.status = "redundant"
+        print(wp.status)
 
-    # checks if the calculated distances are inbetween the min and max and classifies the waypoint
+    # checks if the calculated distances are inbetween the min and max and classifies the distance
     def compare(self, d, min, max, wp, tcp):
         if d < min:
             wp.distances.append(d)
@@ -42,6 +65,7 @@ class Algorithm:
             if tcp:
                 wp.diffInTCP = True
         else:  # OK
+            wp.status = "ok"
             wp.distances.append(d)
 
     # parameter waypoints: list of programmed waypoints

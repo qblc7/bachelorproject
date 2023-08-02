@@ -43,7 +43,7 @@ if __name__ == '__main__':
     # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-    host = '172.17.0.2'
+    host = '172.17.0.3'  # '131.159.6.109'
     port = 30004
     frequency = 50
     config = 'recipe.xml'

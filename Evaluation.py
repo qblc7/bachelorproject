@@ -2,7 +2,7 @@ import similaritymeasures as sim
 import xml.etree.ElementTree as ET
 
 if __name__ == '__main__':
-    origtree = ET.parse('original90.xml')
+    origtree = ET.parse('originalErsterVersuch.xml')
     for elem in origtree.iter():
         if elem == 'v1':
             pass
