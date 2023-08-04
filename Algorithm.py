@@ -23,11 +23,9 @@ class Algorithm:
         for i in range(0, 7):
             # if TCP
             if i == 6:
-                print(type(wp.coordinates[i]))
                 temp = math.sqrt(pow((wp.coordinates[i]-wpPrev.coordinates[i]), 2) + pow((wp.coordinates[i+1]-wpPrev.coordinates[i+1]), 2) + pow((wp.coordinates[i+2]-wpPrev.coordinates[i+2]), 2))
                 self.compare(temp, self.minTCP, self.maxTCP, wp, True)
             else:  # joints
-                print(type(wp.coordinates[i]))
                 temp = abs(wp.coordinates[i] - wpPrev.coordinates[i])
                 self.compare(temp, self.minAngle, self.maxAngle, wp, False)
             # not all joints will be moved at the same time: count how many distances classify as what
@@ -145,13 +143,15 @@ class Algorithm:
     # parameter wp: list of programmed waypoints
     def generateProposedBPMN(self, wp):
         root = ET.Element("description")
+        a = 0
         for i in range(0, len(wp)):
             if wp[i].status == "redundant":
                 pass
             elif wp[i].status == "missing":
                 print("max threshold too small")
             else:
-                call = ET.SubElement(root, "call", id="a" + str(i), endpoint="move")
+                call = ET.SubElement(root, "call", id="a" + str(a), endpoint="move")
+                a = a+1
                 parameters = ET.SubElement(call, "parameters")
                 ET.SubElement(parameters, "label").text = "Move to coords"
                 ET.SubElement(parameters, "method").text = ":post"
