@@ -72,7 +72,6 @@ class Algorithm:
         for t in range(1, len(waypoints)):
             self.calculateDistances(waypoints[t], waypoints[t - 1])
         # check status for each waypoint
-        #  for t in range(1, len(waypoints)):
         t = 1
         while t < len(waypoints):
             if waypoints[t].status == 'missing':  # case: need more wps
