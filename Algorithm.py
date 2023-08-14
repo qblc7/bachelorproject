@@ -24,9 +24,11 @@ class Algorithm:
             # if TCP
             if i == 6:
                 temp = math.sqrt(pow((wp.coordinates[i]-wpPrev.coordinates[i]), 2) + pow((wp.coordinates[i+1]-wpPrev.coordinates[i+1]), 2) + pow((wp.coordinates[i+2]-wpPrev.coordinates[i+2]), 2))
+                print(temp)
                 self.compare(temp, self.minTCP, self.maxTCP, wp, True)
             else:  # joints
                 temp = abs(wp.coordinates[i] - wpPrev.coordinates[i])
+                print(temp)
                 self.compare(temp, self.minAngle, self.maxAngle, wp, False)
             # not all joints will be moved at the same time: count how many distances classify as what
             if wp.status == "ok":
@@ -40,7 +42,7 @@ class Algorithm:
         # classifying the waypoint -> as long as at least one max<distance>min: wp is ok
         if ok > 0:
             wp.status = "ok"
-        elif missing > redundant:
+        elif missing > 0:
             wp.status = "missing"
         else:
             wp.status = "redundant"
@@ -50,12 +52,10 @@ class Algorithm:
     def compare(self, d, min, max, wp, tcp):
         if d < min:
             wp.distances.append(d)
-            # check if status was changed already
-            if wp.status == "ok":
-                wp.status = "redundant"
-                wp.statdiff = d
-                if tcp:
-                    wp.diffInTCP = True
+            wp.status = "redundant"
+            wp.statdiff = d
+            if tcp:
+                wp.diffInTCP = True
         elif d > max:
             wp.distances.append(d)
             wp.status = "missing"
@@ -72,13 +72,19 @@ class Algorithm:
         for t in range(1, len(waypoints)):
             self.calculateDistances(waypoints[t], waypoints[t - 1])
         # check status for each waypoint
+        print('2nd check')
         t = 1
         while t < len(waypoints):
             if waypoints[t].status == 'missing':  # case: need more wps
-                if waypoints[t].diffInTCP == True:
-                    print(f'add {waypoints[t].statdiff / self.maxTCP} more waypoints before {t}')
+                if waypoints[t-1].status == 'redundant':
+                    waypoints[t-1].status = 'ok'
+                    waypoints[t].status = 'ok'
+                    print('add before')
                 else:
-                    print(f'add {waypoints[t].statdiff / self.maxAngle} more waypoints before {t}')
+                    if waypoints[t].diffInTCP == True:
+                        print(f'add {waypoints[t].statdiff / self.maxTCP} more waypoints before {t}')
+                    else:
+                        print(f'add {waypoints[t].statdiff / self.maxAngle} more waypoints before {t}')
                 t = t+1
             elif waypoints[t].status == "redundant":  # case: too many wps
                 s = t
@@ -86,7 +92,12 @@ class Algorithm:
                 # removes wps until status not "redundant" anymore
                 while waypoints[s].status == "redundant" and s < len(waypoints)-1:
                     print(f'remove waypoint {s}')
-                    self.calculateDistances(waypoints[s + 1], waypoints[s - 1])
+                    self.calculateDistances(waypoints[s + 1], waypoints[t-1])
+                    if waypoints[s+1].status == 'missing':  # case: need more wps
+                        if waypoints[s].status == 'redundant':
+                            waypoints[s].status = 'ok'
+                            waypoints[s+1].status = 'ok'
+                            print('add before')
                     s = s + 1
                 t = s+1
             else:

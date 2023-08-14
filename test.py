@@ -9,6 +9,16 @@ if __name__ == '__main__':
     obs180 = Algorithm(1.57, math.pi)   # 90-180 Grad
     obs270 = Algorithm(math.pi, 4.712)  # 180-270 Grad
     obs360 = Algorithm(4.712, 2*math.pi)  # 270-360 Grad
+    ########
+    obs22_5 = Algorithm(0.0175, 0.393)  # 1-22.5 Grad
+    obs45 = Algorithm(0.393, math.pi/4)  # 22.5-45 Grad
+    obs67_5 = Algorithm(math.pi/4, 1.178)  # 45-67.5 Grad
+    obs90 = Algorithm(1.178, 1.57)  # 67.5-90 Grad
+    #######
+    obs5_5 = Algorithm(0.0175, 0.096)  # 1-5.5 Grad
+    obs11 = Algorithm(0.096, 0.190)# 0.192)  # 5.5-11 Grad
+    obs16_5 = Algorithm(0.192, 0.288)  # 11-16.5 Grad
+    obs22 = Algorithm(0.288, 0.384)  # 16.5-22 Grad
     #w1 = Waypoint([5.027843475341797, -1.1360243123820801, 1.1939199606524866, 4.564928217525146, -1.458081070576803, -5.593887154256002, -0.3734197744316392, 0.6107684546389476, 0.24600848986167656, -3.054511620612435, 0.5680279116028478, 0.21694808100773125])
     #w2 = Waypoint([4.68212366104126, -1.5450957168689747, 1.1066983381854456, 4.567531271571777, -1.4581168333636683, -5.593851153050558, -0.14703496138521968, 0.6140507325035817, 0.5677087376759478, -2.445332865923505, 0.872554837559796, 0.38664908692214495])
     #w3 = Waypoint([3.876007556915283, -1.0653831523707886, 1.1560629049884241, 4.965081679611959, -1.4580567518817347, -5.594066683446066, 0.3297097982510891, 0.5206141528506351, 0.1926164168716521, 2.0076683382693616, -1.9559187356706016, -0.18888256632020975])
@@ -19,7 +29,7 @@ if __name__ == '__main__':
 
     # reading robot data from csv files to re-execute algorithm with different thresholds
     waypoints = []
-    with open("robot_datakurvig.csv") as data:
+    with open("robot_dataErsterVersuch_l1.csv") as data:
         reader = csv.reader(data, delimiter=",")
         next(reader, None)  # skip headers
         for row in reader:  # reads every row as string
@@ -28,7 +38,16 @@ if __name__ == '__main__':
                 temp = Waypoint(newData)
                 waypoints.append(temp)
     data.close()
-    observer.executeAlgorithm(waypoints)
-    obs180.executeAlgorithm(waypoints)
-    obs270.executeAlgorithm(waypoints)
-    obs360.executeAlgorithm(waypoints)
+    #observer.executeAlgorithm(waypoints)
+    #obs180.executeAlgorithm(waypoints)
+    #obs270.executeAlgorithm(waypoints)
+    #obs360.executeAlgorithm(waypoints)
+    #####
+    obs22_5.executeAlgorithm(waypoints)
+    obs45.executeAlgorithm(waypoints)
+    #obs67_5.executeAlgorithm(waypoints)
+    #obs90.executeAlgorithm(waypoints)
+    #obs5_5.executeAlgorithm(waypoints)
+    #obs11.executeAlgorithm(waypoints)
+    #obs16_5.executeAlgorithm(waypoints)
+    #obs22.executeAlgorithm(waypoints)
