@@ -14,7 +14,7 @@ if __name__ == '__main__':
             test.append(float(elem.text))
             origcurve.append(test)
             test = []
-    proptree = ET.parse('proposed67_5_90_o2.xml')
+    proptree = ET.parse('proposed67_5-90_o2.xml')
     propcurve = []
     temp = []
     for elem in proptree.iter():

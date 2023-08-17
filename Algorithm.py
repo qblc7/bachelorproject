@@ -6,12 +6,18 @@ import xml.etree.ElementTree as ET
 class Algorithm:
     def __init__(self, minA, maxA):
         # thresholds: for joints in radian (joint angles are received in rad), for TCP in meter
-        # Grad = rad*(180/pi)
+        # Grad = rad*(180/pi), math.sin() nimmt x in radian
         self.minAngle = minA
         self.maxAngle = maxA
-        self.minTCP = abs(2 * 0.85 * math.sin((minA*180/math.pi) / 2))
-        self.maxTCP = abs(2 * 0.85 * math.sin((maxA*180/math.pi) / 2))
-        # list of programmed waypoints
+        temp1 = 2 * 0.85 * math.sin((minA / 2))
+        temp2 = 2 * 0.85 * math.sin((maxA / 2))
+        if temp1 > temp2:
+            self.minTCP = temp2
+            self.maxTCP = temp1
+        else:
+            self.minTCP = temp1
+            self.maxTCP = temp2
+            # list of programmed waypoints
         self.wps = []
 
     # calculates all joint/tcp distances between two given waypoints
@@ -81,6 +87,7 @@ class Algorithm:
                     waypoints[t].status = 'ok'
                     print('add before')
                 else:
+                    waypoints[t].status = 'ok'  # set status to ok, so it will still be in the proposed BPMN
                     if waypoints[t].diffInTCP == True:
                         print(f'add {waypoints[t].statdiff / self.maxTCP} more waypoints before {t}')
                     else:

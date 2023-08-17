@@ -8,7 +8,7 @@ if __name__ == '__main__':
     observer = Algorithm(0.0175, 1.57)  # 1-90 Grad
     obs180 = Algorithm(1.57, math.pi)   # 90-180 Grad
     obs270 = Algorithm(math.pi, 4.712)  # 180-270 Grad
-    obs360 = Algorithm(4.712, 2*math.pi)  # 270-360 Grad
+    obs360 = Algorithm(4.712, 6.266)  # 270-359 Grad
     ########
     obs22_5 = Algorithm(0.0175, 0.393)  # 1-22.5 Grad
     obs45 = Algorithm(0.393, math.pi/4)  # 22.5-45 Grad
@@ -29,7 +29,7 @@ if __name__ == '__main__':
 
     # reading robot data from csv files to re-execute algorithm with different thresholds
     waypoints = []
-    with open("robot_dataErsterVersuch_l1.csv") as data:
+    with open("robot_dataKurve_o2.csv") as data:
         reader = csv.reader(data, delimiter=",")
         next(reader, None)  # skip headers
         for row in reader:  # reads every row as string
@@ -45,8 +45,9 @@ if __name__ == '__main__':
     #####
     obs22_5.executeAlgorithm(waypoints)
     obs45.executeAlgorithm(waypoints)
-    #obs67_5.executeAlgorithm(waypoints)
-    #obs90.executeAlgorithm(waypoints)
+    obs67_5.executeAlgorithm(waypoints)
+    obs90.executeAlgorithm(waypoints)
+    ########
     #obs5_5.executeAlgorithm(waypoints)
     #obs11.executeAlgorithm(waypoints)
     #obs16_5.executeAlgorithm(waypoints)
