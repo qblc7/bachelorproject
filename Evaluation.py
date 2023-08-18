@@ -1,7 +1,5 @@
 import similaritymeasures as sim
 import xml.etree.ElementTree as ET
-import numpy as np
-from numpy import dtype
 
 if __name__ == '__main__':
     origtree = ET.parse('original_o2.xml')
@@ -14,7 +12,7 @@ if __name__ == '__main__':
             test.append(float(elem.text))
             origcurve.append(test)
             test = []
-    proptree = ET.parse('proposed67_5-90_o2.xml')
+    proptree = ET.parse('proposed0.087.xml')
     propcurve = []
     temp = []
     for elem in proptree.iter():

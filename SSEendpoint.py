@@ -26,4 +26,4 @@ def event(action):
 # how to run docker robot simulation:
 # docker run --rm -it universalrobots/ursim_e-series
 
-# distance similarity measure: discrete frechet distance --> libraries: fred-frechet, similaritymeasures
+# distance similarity measure: discrete frechet distance --> libraries: similaritymeasures
