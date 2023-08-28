@@ -4,6 +4,7 @@ from Algorithm import Algorithm
 from Waypoint import Waypoint
 import csv
 
+# reads csv-files with recorded robot data and executes the Algorithm
 if __name__ == '__main__':
     observer = Algorithm(0.0175, 1.57)  # 1-90 Grad, TCP: 0,015-1,20
     obs180 = Algorithm(1.57, math.pi)   # 90-180 Grad, TCP: 1,20-1,7
@@ -29,7 +30,7 @@ if __name__ == '__main__':
     #wp = [w1, w1_1, w1_2, w2, w3]
     #observer.executeAlgorithm(wp)
 
-    # reading robot data from csv files to re-execute algorithm with different thresholds
+    # reading robot data from csv files
     waypoints = []
     with open("robot_dataKurve_o2.csv") as data:
         reader = csv.reader(data, delimiter=",")
@@ -40,6 +41,8 @@ if __name__ == '__main__':
                 temp = Waypoint(newData)
                 waypoints.append(temp)
     data.close()
+    # re-execute algorithm with different thresholds
+
     #observer.executeAlgorithm(waypoints)
     #obs180.executeAlgorithm(waypoints)
     #obs270.executeAlgorithm(waypoints)
