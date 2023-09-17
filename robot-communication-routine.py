@@ -1,5 +1,4 @@
-import urllib
-from urllib import parse
+
 import tornado
 from tornado import httpclient
 import requests
@@ -7,7 +6,6 @@ import requests
 import rtde.rtde as rtde
 import rtde.rtde_config as rtde_config
 import rtde.csv_writer as csv_writer
-import eventsource.request as request
 import logging
 import sys
 
@@ -43,7 +41,7 @@ if __name__ == '__main__':
     # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-    host = '172.17.0.3'  # '131.159.6.109'
+    host = '172.17.0.2'  # '131.159.6.109'
     port = 30004
     frequency = 50
     config = 'recipe.xml'

@@ -2,53 +2,46 @@
 
 ***
 
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thank you to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
+## Learning BPMN Process Models from Cobot Movements
 
 ## Description
 This project can connect to the Universal Robots RTDE (Real-Time Data Exchange) Interface to receive position data (waypoints) from the robot when the robot is programmed via free-drive mode.
 These waypoints are then published in the SSE channel of the REST Server. Clients can subscribe to the REST Server and receive the data for further processing.
 The Client implemented in this project selects waypoints from the received ones. This selection is done based on a minimum and maximum threshold for the distance between the 
-waypoints. The user can set these according to how granular the waypoints should be. Furthermore, the Client creates two BPMN models: one based on the originally received waypoints, the other
+waypoints. The user can set the joint thresholds according to how granular the waypoints should be. Furthermore, the Client creates two BPMN models: one based on the originally received waypoints, the other
 based on the selected ones. These models are saved as xml-files in the cpee-tree format.
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+The program test.py reads in already recorded waypoint data from a csv-file and then run the algorithm to create the BPMN models.
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+The program Evaluation.py reads two xml-files: first the original BPMN model, then the BPMN to be compared and calculates the similarity between the movements saved in the BPMN.
+The similarity is calculated as the Discrete Frechet Distance (DFD) from the 'similaritymeasures' package.
 
 ## Installation
 requires docker, redis, flask and flask-sse for the REST Server and the package 'similaritymeasures' for the Evaluation 
 
 ## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+Free-drive Teaching and Recording using the terminal:
+1. start the REST Server using the commands: 1. docker run --name redis-sse -p 6379:6379 -d redis (first time) or docker start redis-sse, 2. gunicorn RESTServer:app --worker-class gevent --bind 127.0.0.1:5000
+2. start Client: python3 Client.py
+3. start robot-communication-routine: change the host IP-address in line 44 to the correct one, then start with the command: python3 robot-communication-routine.py
+4. teach robot in free-drive mode
+5. stop robot-communication-routine with ctr c, this also signals the Client that the movement is finished and the Client will start the algorithm
+6. stop REST Server with ctr c and stop the docker container with: docker stop redis-sse
+
+Using test.py:
+1. change the csv-file name in line 35 to the desired file and make sure the file is in the bachelorproject-folder
+2. select which algorithm with which joint thresholds should be run, by creating a new Algorithm or uncomment an existing one
+3. run test.py in IDE or in terminal
+
+Using Evaluation.py:
+1. change the xml-file name in line 7 (original BPMN) and the xml-file name in line 19 (proposed BPMN) to the desired files. Make sure the files are in cpee-tree format and located in the bachelorproject-folder
+2. run Evaluation.py in IDE or in terminal
 
 ## Support
 Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
 
 ## Authors and acknowledgment
 Show your appreciation to those who have contributed to the project.
 
 ## License
 For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
