@@ -17,13 +17,3 @@ def event(action):
     else:
         sse.publish(data=action, type="robotdata")
         return {}, 200
-
-# how to run the app from terminal:
-# docker run --name redis-sse -p 6379:6379 -d redis (to stop container: docker stop <container id> oder <container name>)
-# nächstes mal: docker start <container name>
-# gunicorn RESTServer:app --worker-class gevent --bind 127.0.0.1:5000
-
-# how to run docker robot simulation:
-# docker run --rm -it universalrobots/ursim_e-series
-
-# distance similarity measure: discrete frechet distance --> libraries: similaritymeasures

@@ -1,7 +1,9 @@
+
 from Observer import ObserverInterface
 from Algorithm import Algorithm
 from Waypoint import Waypoint
 import zope.interface
+import math
 
 import sseclient
 import urllib3
@@ -10,10 +12,10 @@ import urllib3
 @zope.interface.implementer(ObserverInterface)
 class Clientside:
     def __init__(self):
-        self.algorithm90 = Algorithm(1, 3)
-        self.algorithm180 = Algorithm(3, 6)
-        self.algorithm270 = Algorithm(6, 10)
-        self.algorithm360 = Algorithm(10, 20)
+        self.algorithm90 = Algorithm(0.0175, 1.57)  # 1-90 Grad
+        self.algorithm180 = Algorithm(1.57, math.pi)   # 90-180 Grad
+        self.algorithm270 = Algorithm(math.pi, 4.712)  # 180-270 Grad
+        self.algorithm360 = Algorithm(4.712, 6.266)  # 270-359 Grad
         self.waypoints = []
 
     # callback function which is called for every received event
@@ -36,7 +38,7 @@ def open_stream(url, headers):
     http = urllib3.PoolManager()
     return http.request('GET', url, preload_content=False, headers=headers)
 
-
+# connect to the REST Servers SSE channel and wait for events
 if __name__ == '__main__':
     observer = Clientside()
     streamNotFinished = True

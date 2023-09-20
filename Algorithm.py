@@ -157,6 +157,7 @@ class Algorithm:
         origBpmn = ET.ElementTree(root)
         origBpmn.write("original" + str(self.minAngle) + ".xml")
 
+    # generate proposed BPMN with the help of the status of the waypoints
     # parameter wp: list of programmed waypoints
     def generateProposedBPMN(self, wp):
         root = ET.Element("description")
